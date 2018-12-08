@@ -194,145 +194,123 @@ echo "--------------------"
 # make ndk standalone toolchain
 ./tools/do-ndk-standalone-toochain.sh $FF_ARCH
 
-# #--------------------
-# echo ""
-# echo "--------------------"
-# echo "[*] check ffmpeg env"
-# echo "--------------------"
+echo ""
+echo "--------------------"
+echo "[*] check ffmpeg env"
+echo ""
 
-# export PATH=$FF_TOOLCHAIN_PATH/bin:$PATH
-# #export CC="ccache ${FF_CROSS_PREFIX}-gcc"
-# export CC="${FF_CROSS_PREFIX}-gcc"
-# export LD=${FF_CROSS_PREFIX}-ld
-# export AR=${FF_CROSS_PREFIX}-ar
-# export STRIP=${FF_CROSS_PREFIX}-strip
+export PATH=$FF_TOOLCHAIN_PATH/bin:$PATH
+export CC="${FF_CROSS_PREFIX}-gcc"
+export LD=${FF_CROSS_PREFIX}-ld
+export AR=${FF_CROSS_PREFIX}-ar
+export STRIP=${FF_CROSS_PREFIX}-strip
 
-# echo $FF_TOOLCHAIN_PATH
-# echo $CC
+FF_CFLAGS="-O3 -Wall -pipe \
+    -std=c99 \
+    -ffast-math \
+    -fstrict-aliasing -Werror=strict-aliasing \
+    -Wno-psabi -Wa,--noexecstack \
+    -DANDROID -DNDEBUG"
 
-# FF_CFLAGS="-O3 -Wall -pipe \
-#     -std=c99 \
-#     -ffast-math \
-#     -fstrict-aliasing -Werror=strict-aliasing \
-#     -Wno-psabi -Wa,--noexecstack \
-#     -DANDROID -DNDEBUG"
+# with ffmpeg openssl
+if [ -f "${FF_DEP_OPENSSL_LIB}/libssl.a" ]; then
+    echo "OpenSSL detected"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-nonfree"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-openssl"
 
-# # cause av_strlcpy crash with gcc4.7, gcc4.8
-# # -fmodulo-sched -fmodulo-sched-allow-regmoves
+    FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_OPENSSL_INC}"
+    FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_OPENSSL_LIB} -lssl -lcrypto"
+fi
+if [ -f "${FF_DEP_LIBSOXR_LIB}/libsoxr.a" ]; then
+    echo "libsoxr detected"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-libsoxr"
 
-# # --enable-thumb is OK
-# #FF_CFLAGS="$FF_CFLAGS -mthumb"
+    FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_LIBSOXR_INC}"
+    FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_LIBSOXR_LIB} -lsoxr"
+fi
 
-# # not necessary
-# #FF_CFLAGS="$FF_CFLAGS -finline-limit=300"
+# with ffmpeg standard options:
+FF_CFG_FLAGS="$FF_CFG_FLAGS --prefix=$FF_PREFIX"
 
-# export COMMON_FF_CFG_FLAGS=
-# . $FF_BUILD_ROOT/../../config/module.sh
+# with ffmpeg Advanced options (experts only):
+FF_CFG_FLAGS="$FF_CFG_FLAGS --cross-prefix=${FF_CROSS_PREFIX}-"
+FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-cross-compile"
+FF_CFG_FLAGS="$FF_CFG_FLAGS --target-os=linux"
+FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-pic"
 
+if [ "$FF_ARCH" = "x86" ]; then
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-asm"
+else
+    # Optimization options (experts only):
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-asm"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-inline-asm"
+fi
+case "$FF_BUILD_OPT" in
+    debug)
+        FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-optimizations"
+        FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-debug"
+        FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-small"
+    ;;
+    *)
+        FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-optimizations"
+        FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-debug"
+        FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-small"
+    ;;
+esac
 
-# #--------------------
-# # with openssl
-# if [ -f "${FF_DEP_OPENSSL_LIB}/libssl.a" ]; then
-#     echo "OpenSSL detected"
-# # FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-nonfree"
-#     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-openssl"
+# with ffmpeg config module
+export COMMON_FF_CFG_FLAGS=
+. $FF_BUILD_ROOT/../../config/module.sh
 
-#     FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_OPENSSL_INC}"
-#     FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_OPENSSL_LIB} -lssl -lcrypto"
-# fi
+FF_CFG_FLAGS="$FF_CFG_FLAGS $COMMON_FF_CFG_FLAGS"
 
-# if [ -f "${FF_DEP_LIBSOXR_LIB}/libsoxr.a" ]; then
-#     echo "libsoxr detected"
-#     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-libsoxr"
+echo "param PATH = $PATH"
+echo "param CC = $CC"
+echo "param LD = $LD"
+echo "param AR = $AR"
+echo "param STRIP = $STRIP"
+echo ""
+echo "param FF_CFLAGS = $FF_CFLAGS"
+echo "param FF_EXTRA_CFLAGS = $FF_EXTRA_CFLAGS"
+echo ""
+echo "param FF_DEP_LIBS = $FF_DEP_LIBS"
+echo "param FF_EXTRA_LDFLAGS = $FF_EXTRA_LDFLAGS"
+echo ""
+echo "param FF_CFG_FLAGS = $FF_CFG_FLAGS"
+echo "--------------------"
+echo ""
 
-#     FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_LIBSOXR_INC}"
-#     FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_LIBSOXR_LIB} -lsoxr"
-# fi
+echo "--------------------"
+echo "[*] configurate ffmpeg"
+echo "--------------------"
 
-# FF_CFG_FLAGS="$FF_CFG_FLAGS $COMMON_FF_CFG_FLAGS"
+cd $FF_SOURCE
 
-# #--------------------
-# # Standard options:
-# FF_CFG_FLAGS="$FF_CFG_FLAGS --prefix=$FF_PREFIX"
+if [ -f "./config.h" ]; then
+    echo 'reuse configure'
+else
+    # http://www.runoob.com/linux/linux-comm-which.html
+    # which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
+    which $CC
+    
+    # https://blog.csdn.net/m0_37170593/article/details/78892913
+    # example: --extra-cflags=-I/xxxx/include 
+    # example: --extra-ldflags=-L/usr/local/x264-x86/lib
+    # --extra-cflags=ECFLAGS   add ECFLAGS to CFLAGS []
+    # --extra-ldflags=ELDFLAGS add ELDFLAGS to LDFLAGS []
+    # -Wall 允许发出Gcc提供的所有有用的报警信息
+    # -O3Gcc 可以对代码进行优化，它通过编译选项“-On”来控制优化代码的生成，其中n是一个代表优化级别的整数。
+    # 对于不同版本的Gcc来讲，n的取值范围及其对应的优化效果可能并不完全相同，比较典型的范围是从0变化到2或3。
+    # -pipe                   Use pipes between commands, when possible# -pipe 使用管道
+    # -ffast-math             Allow aggressive, lossy floating-point optimizations
+    # -Werror	              把所有的告警信息转化为错误信息，并在告警发生时终止编译过程
+    # -Wa,<arg>               Pass the comma separated arguments in <arg> to the assembler
+    ./configure $FF_CFG_FLAGS \
+        --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
+        --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS"
 
-# # Advanced options (experts only):
-# FF_CFG_FLAGS="$FF_CFG_FLAGS --cross-prefix=${FF_CROSS_PREFIX}-"
-# FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-cross-compile"
-# FF_CFG_FLAGS="$FF_CFG_FLAGS --target-os=linux"
-# FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-pic"
-# # FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-symver"
-
-# if [ "$FF_ARCH" = "x86" ]; then
-#     FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-asm"
-# else
-#     # Optimization options (experts only):
-#     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-asm"
-#     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-inline-asm"
-# fi
-
-# case "$FF_BUILD_OPT" in
-#     debug)
-#         FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-optimizations"
-#         FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-debug"
-#         FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-small"
-#     ;;
-#     *)
-#         FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-optimizations"
-#         FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-debug"
-#         FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-small"
-#     ;;
-# esac
-
-# #--------------------
-# echo ""
-# echo "--------------------"
-# echo "[*] configurate ffmpeg"
-# echo "--------------------"
-# # /Users/biezhihua/StudySpace/ijkplayer/android/contrib/ffmpeg-armv7a
-# cd $FF_SOURCE
-# if [ -f "./config.h" ]; then
-#     echo 'reuse configure'
-# else
-#     # CC arm-linux-androideabi-gcc
-#     # FF_CFLAGS 
-#     # --arch=arm --cpu=cortex-a8 --enable-neon --enable-thumb --disable-gpl 
-#     # --disable-nonfree --enable-runtime-cpudetect --disable-gray --disable-swscale-alpha 
-#     # --disable-programs --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-doc 
-#     # --disable-htmlpages --disable-manpages --disable-podpages --disable-txtpages 
-#     # --disable-avdevice --enable-avcodec --enable-avformat --enable-avutil --enable-swresample 
-#     # --enable-swscale --disable-postproc --enable-avfilter --disable-avresample --enable-network
-#     # --disable-d3d11va --disable-dxva2 --disable-vaapi --disable-vda --disable-vdpau --disable-videotoolbox 
-#     # --disable-encoders --enable-encoder=png --disable-decoders --enable-decoder=aac --enable-decoder=aac_latm 
-#     # --enable-decoder=flv --enable-decoder=h264 --enable-decoder=mp3* --enable-decoder=vp6f --enable-decoder=flac 
-#     # --enable-decoder=hevc --enable-decoder=vp8 --enable-decoder=vp9 --disable-hwaccels --disable-muxers 
-#     # --enable-muxer=mp4 --disable-demuxers --enable-demuxer=aac --enable-demuxer=concat --enable-demuxer=data 
-#     # --enable-demuxer=flv --enable-demuxer=hls --enable-demuxer=live_flv --enable-demuxer=mov --enable-demuxer=mp3  
-#     # --enable-demuxer=mpegps --enable-demuxer=mpegts --enable-demuxer=mpegvideo --enable-demuxer=flac 
-#     # --enable-demuxer=hevc --enable-demuxer=webm_dash_manifest --disable-parsers --enable-parser=aac 
-#     # --enable-parser=aac_latm --enable-parser=h264 --enable-parser=flac --enable-parser=hevc --enable-bsfs 
-#     # --disable-bsf=chomp --disable-bsf=dca_core --disable-bsf=dump_extradata --disable-bsf=hevc_mp4toannexb 
-#     # --disable-bsf=imx_dump_header --disable-bsf=mjpeg2jpeg --disable-bsf=mjpega_dump_header 
-#     # --disable-bsf=mov2textsub --disable-bsf=mp3_header_decompress --disable-bsf=mpeg4_unpack_bframes 
-#     # --disable-bsf=noise --disable-bsf=remove_extradata --disable-bsf=text2movsub --disable-bsf=vp9_superframe 
-#     # --enable-protocols --enable-protocol=async --disable-protocol=bluray --disable-protocol=concat -
-#     # --disable-protocol=crypto --disable-protocol=ffrtmpcrypt --enable-protocol=ffrtmphttp --disable-protocol=gopher 
-#     # --disable-protocol=icecast --disable-protocol=librtmp* --disable-protocol=libssh --disable-protocol=md5 
-#     # --disable-protocol=mmsh --disable-protocol=mmst --disable-protocol=rtmp* --enable-protocol=rtmp 
-#     # --enable-protocol=rtmpt --disable-protocol=rtp --disable-protocol=sctp --disable-protocol=srtp 
-#     # --disable-protocol=subfile --disable-protocol=unix --disable-devices --disable-filters --disable-iconv 
-#     # --disable-audiotoolbox --disable-videotoolbox --disable-linux-perf --disable-bzlib 
-#     # --prefix=/Users/biezhihua/StudySpace/ijkplayer/android/contrib/build/ffmpeg-armv7a/output 
-#     # --cross-prefix=arm-linux-androideabi- --enable-cross-compile --target-os=linux --enable-pic --enable-asm 
-#     # --enable-inline-asm --enable-optimizations --enable-debug --enable-small
-#     # FF_EXTRA_CFLAGS -O3 -Wall -pipe -std=c99 -ffast-math -fstrict-aliasing -Werror=strict-aliasing -Wno-psabi -Wa,--noexecstack -DANDROID -DNDEBUG
-#     # FF_DEP_LIBS -march=armv7-a -mcpu=cortex-a8 -mfpu=vfpv3-d16 -mfloat-abi=softfp -mthumb
-#     # FF_EXTRA_LDFLAGS -Wl,--fix-cortex-a8
-#     which $CC
-#     ./configure $FF_CFG_FLAGS \
-#         --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
-#         --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS"
-#     make clean
-# fi
+    make clean
+fi
 
 # #--------------------
 # echo ""
