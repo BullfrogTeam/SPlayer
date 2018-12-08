@@ -5,7 +5,7 @@ android/ffmpeg-*
 android/openssl-*
 ios/ffmpeg-*
 ios/openssl-*
-extra
+repository
 .DS_Store
 
 # built application files
