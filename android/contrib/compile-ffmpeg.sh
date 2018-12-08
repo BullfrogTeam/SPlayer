@@ -34,7 +34,6 @@ echo_usage() {
 }
 
 echo_nextstep_help() {
-    echo ""
     echo "--------------------"
     echo "[*] Finished"
     echo "--------------------"

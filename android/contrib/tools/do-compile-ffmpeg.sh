@@ -46,6 +46,8 @@ FF_STANDALONE_TOOLCHAIN_STL=gnustl
 FF_STANDALONE_TOOLCHAIN_ARCH=arm
 FF_STANDALONE_TOOLCHAIN_CLANG=clang3.6
 
+FF_SPLAYER_SO_NAME=libsplayer.so
+FF_SPLAYER_SO_SIMPLE_NAME=splayer
 
 echo ""
 echo "--------------------"
@@ -347,7 +349,6 @@ echo "--------------------"
 echo ""
 echo "--------------------"
 echo "[*] link ffmpeg"
-echo "--------------------"
 
 FF_LINK_C_OBJ_FILES=
 FF_LINK_ASM_OBJ_FILES=
@@ -373,51 +374,64 @@ echo ""
 echo "FF_LINK_C_OBJ_FILES = $FF_LINK_C_OBJ_FILES"
 echo "FF_LINK_ASM_OBJ_FILES = $FF_LINK_ASM_OBJ_FILES"
 echo "FF_DEP_LIBS = $FF_DEP_LIBS"
-echo "FF_SPLAYER_SO = $FF_OUTPUT_PATH/libsplayer.so"
+echo "FF_SPLAYER_SO = $FF_OUTPUT_PATH/$FF_SPLAYER_SO_NAME"
 echo "FF_ANDROID_PLATFORM = $FF_ANDROID_PLATFORM"
 echo "FF_TOOLCHAIN_SYSROOT = $FF_TOOLCHAIN_SYSROOT_PATH"
 
-# FF_SYSROOT=$ANDROID_NDK/platforms/$FF_ANDROID_PLATFORM/arch-arm/
-# echo "FF_SYSROOT = $FF_SYSROOT"
-
 ${CLANG} -lm -lz -shared -Wl,--no-undefined -Wl,-z,noexecstack ${FF_EXTRA_LDFLAGS} \
-    -Wl,-soname,libsplayer.so \
+    -Wl,-soname,$FF_SPLAYER_SO_NAME \
     ${FF_LINK_C_OBJ_FILES} \
     ${FF_LINK_ASM_OBJ_FILES} \
     ${FF_DEP_LIBS} \
-    -o ${FF_OUTPUT_PATH}/libsplayer.so
+    -o ${FF_OUTPUT_PATH}/$FF_SPLAYER_SO_NAME
 
-# mysedi() {
-#     f=$1
-#     exp=$2
-#     n=`basename $f`
-#     cp $f /tmp/$n
-#     sed $exp /tmp/$n > $f
-#     rm /tmp/$n
-# }
+echo "--------------------"
 
-# echo ""
-# echo "--------------------"
-# echo "[*] create files for shared ffmpeg"
-# echo "--------------------"
-# rm -rf $FF_PREFIX/shared
-# mkdir -p $FF_PREFIX/shared/lib/pkgconfig
-# ln -s $FF_PREFIX/include $FF_PREFIX/shared/include
-# ln -s $FF_PREFIX/libijkffmpeg.so $FF_PREFIX/shared/lib/libijkffmpeg.so
-# cp $FF_PREFIX/lib/pkgconfig/*.pc $FF_PREFIX/shared/lib/pkgconfig
-# for f in $FF_PREFIX/lib/pkgconfig/*.pc; do
-#     # in case empty dir
-#     if [ ! -f $f ]; then
-#         continue
-#     fi
-#     cp $f $FF_PREFIX/shared/lib/pkgconfig
-#     f=$FF_PREFIX/shared/lib/pkgconfig/`basename $f`
-#     # OSX sed doesn't have in-place(-i)
-#     mysedi $f 's/\/output/\/output\/shared/g'
-#     mysedi $f 's/-lavcodec/-lijkffmpeg/g'
-#     mysedi $f 's/-lavfilter/-lijkffmpeg/g'
-#     mysedi $f 's/-lavformat/-lijkffmpeg/g'
-#     mysedi $f 's/-lavutil/-lijkffmpeg/g'
-#     mysedi $f 's/-lswresample/-lijkffmpeg/g'
-#     mysedi $f 's/-lswscale/-lijkffmpeg/g'
-# done
+mysedi() {
+    f=$1
+    exp=$2
+    n=`basename $f`
+    cp $f /tmp/$n
+    # http://www.runoob.com/linux/linux-comm-sed.html
+    # sed可依照script的指令，来处理、编辑文本文件。
+    sed $exp /tmp/$n > $f
+    rm /tmp/$n
+    # echo "${f}    ${exp}    ${n}"
+}
+
+echo ""
+echo "--------------------"
+echo "[*] create files for shared ffmpeg"
+echo ""
+
+rm -rf ${FF_OUTPUT_PATH}/shared
+mkdir -p ${FF_OUTPUT_PATH}/shared/lib/pkgconfig
+ln -s ${FF_OUTPUT_PATH}/include ${FF_OUTPUT_PATH}/shared/include
+ln -s ${FF_OUTPUT_PATH}/${FF_SPLAYER_SO_NAME} ${FF_OUTPUT_PATH}/shared/lib/${FF_SPLAYER_SO_NAME}
+cp ${FF_OUTPUT_PATH}/lib/pkgconfig/*.pc ${FF_OUTPUT_PATH}/shared/lib/pkgconfig
+
+echo "FF_OUTPUT_SHARE = ${FF_OUTPUT_PATH}/shared"
+echo "FF_OUTPUT_SHARE_INCLUDE = ${FF_OUTPUT_PATH}/shared/include"
+echo "FF_OUTPUT_SHARE_LIB = ${FF_OUTPUT_PATH}/shared/lib"
+echo ""
+
+for f in ${FF_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
+    # in case empty dir
+    if [[ ! -f ${f} ]]; then
+        continue
+    fi
+    cp ${f} ${FF_OUTPUT_PATH}/shared/lib/pkgconfig
+    f=${FF_OUTPUT_PATH}/shared/lib/pkgconfig/`basename ${f}`
+    echo ${f}
+    # OSX sed doesn't have in-place(-i)
+    mysedi ${f} 's/\/output/\/output\/shared/g'
+    mysedi ${f} 's/-lavcodec/-lsplayer/g'
+    mysedi ${f} 's/-lavfilter/-lsplayer/g'
+    mysedi ${f} 's/-lavformat/-lsplayer/g'
+    mysedi ${f} 's/-lavutil/-lsplayer/g'
+    mysedi ${f} 's/-lswresample/-lsplayer/g'
+    mysedi ${f} 's/-lswscale/-lsplayer/g'
+done
+
+echo "--------------------"
+echo ""
