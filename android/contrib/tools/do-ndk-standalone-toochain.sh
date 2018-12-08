@@ -62,6 +62,8 @@ FF_GCC_64_VER=$GCC_64_VER
 FF_TOOLCHAIN_PATH=$FF_BUILD_ROOT/build/$FF_BUILD_NAME/toolchain
 FF_MAKE_TOOLCHAIN_FLAGS="$FF_MAKE_TOOLCHAIN_FLAGS --install-dir=$FF_TOOLCHAIN_PATH"
 FF_TOOLCHAIN_TOUCH="$FF_TOOLCHAIN_PATH/touch"
+FF_NDK_STL=stlport
+FF_NDK_ARCH=arm
 
 echo "FF_ARCH = $FF_ARCH"
 
@@ -82,14 +84,15 @@ echo "FF_TOOLCHAIN_TOUCH = $FF_TOOLCHAIN_TOUCH"
 echo "FF_ANDROID_PLATFORM = $FF_ANDROID_PLATFORM"
 echo "FF_BUILD_NAME = $FF_BUILD_NAME"
 echo "FF_TOOLCHAIN_NAME = $FF_TOOLCHAIN_NAME"
-echo "--------------------"
-
-if [ ! -f "$FF_TOOLCHAIN_TOUCH" ]; then
+echo "FF_NDK_STL = $FF_NDK_STL"
+echo "FF_NDK_ARCH = $FF_NDK_ARCH"
+echo ""
     
-    $ANDROID_NDK/build/tools/make-standalone-toolchain.sh \
-        $FF_MAKE_TOOLCHAIN_FLAGS \
-        --platform=$FF_ANDROID_PLATFORM \
-        --toolchain=$FF_TOOLCHAIN_NAME
-        
-    touch $FF_TOOLCHAIN_TOUCH;
-fi
+$ANDROID_NDK/build/tools/make-standalone-toolchain.sh \
+    $FF_MAKE_TOOLCHAIN_FLAGS \
+    --platform=$FF_ANDROID_PLATFORM \
+    --toolchain=$FF_TOOLCHAIN_NAME \
+    --stl=$FF_NDK_STL \
+    --force \
+    --arch=$FF_NDK_ARCH
+echo "--------------------"
