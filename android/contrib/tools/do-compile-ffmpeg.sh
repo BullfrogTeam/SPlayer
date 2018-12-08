@@ -166,29 +166,29 @@ FF_DEP_LIBSOXR_LIB=$FF_BUILD_ROOT/build/$FF_BUILD_NAME_LIBSOXR/output/lib
 
 mkdir -p $FF_PREFIX
 
-echo "param FF_MAKE_FLAGS = $FF_MAKE_FLAGS"
-echo "param FF_GCC_VER = $FF_GCC_VER"
-echo "param FF_GCC_64_VER = $FF_GCC_64_VER"
+echo "FF_MAKE_FLAGS = $FF_MAKE_FLAGS"
+echo "FF_GCC_VER = $FF_GCC_VER"
+echo "FF_GCC_64_VER = $FF_GCC_64_VER"
 echo ""
-echo "param FF_BUILD_NAME = $FF_BUILD_NAME"
-echo "param FF_BUILD_NAME_OPENSSL = $FF_BUILD_NAME_OPENSSL"
-echo "param FF_BUILD_NAME_LIBSOXR = $FF_BUILD_NAME_LIBSOXR"
-echo "param FF_SOURCE = $FF_SOURCE"
-echo "param FF_CROSS_PREFIX = $FF_CROSS_PREFIX"
-echo "param FF_TOOLCHAIN_NAME = $FF_TOOLCHAIN_NAME"
+echo "FF_BUILD_NAME = $FF_BUILD_NAME"
+echo "FF_BUILD_NAME_OPENSSL = $FF_BUILD_NAME_OPENSSL"
+echo "FF_BUILD_NAME_LIBSOXR = $FF_BUILD_NAME_LIBSOXR"
+echo "FF_SOURCE = $FF_SOURCE"
+echo "FF_CROSS_PREFIX = $FF_CROSS_PREFIX"
+echo "FF_TOOLCHAIN_NAME = $FF_TOOLCHAIN_NAME"
 echo ""
-echo "param FF_CFG_FLAGS = $FF_CFG_FLAGS"
-echo "param FF_EXTRA_CFLAGS = $FF_EXTRA_CFLAGS"
-echo "param FF_EXTRA_LDFLAGS = $FF_EXTRA_LDFLAGS"
-echo "param FF_ASSEMBLER_SUB_DIRS = $FF_ASSEMBLER_SUB_DIRS"
+echo "FF_CFG_FLAGS = $FF_CFG_FLAGS"
+echo "FF_EXTRA_CFLAGS = $FF_EXTRA_CFLAGS"
+echo "FF_EXTRA_LDFLAGS = $FF_EXTRA_LDFLAGS"
+echo "FF_ASSEMBLER_SUB_DIRS = $FF_ASSEMBLER_SUB_DIRS"
 echo ""
-echo "param FF_PREFIX = $FF_PREFIX"
-echo "param FF_TOOLCHAIN_PATH = $FF_TOOLCHAIN_PATH"
-echo "param FF_SYSROOT = $FF_SYSROOT"
-echo "param FF_DEP_OPENSSL_INC = $FF_DEP_OPENSSL_INC"
-echo "param FF_DEP_OPENSSL_LIB = $FF_DEP_OPENSSL_LIB"
-echo "param FF_DEP_LIBSOXR_INC = $FF_DEP_LIBSOXR_INC"
-echo "param FF_DEP_LIBSOXR_LIB = $FF_DEP_LIBSOXR_LIB"
+echo "FF_PREFIX = $FF_PREFIX"
+echo "FF_TOOLCHAIN_PATH = $FF_TOOLCHAIN_PATH"
+echo "FF_SYSROOT = $FF_SYSROOT"
+echo "FF_DEP_OPENSSL_INC = $FF_DEP_OPENSSL_INC"
+echo "FF_DEP_OPENSSL_LIB = $FF_DEP_OPENSSL_LIB"
+echo "FF_DEP_LIBSOXR_INC = $FF_DEP_LIBSOXR_INC"
+echo "FF_DEP_LIBSOXR_LIB = $FF_DEP_LIBSOXR_LIB"
 echo "--------------------"
 
 # make ndk standalone toolchain
@@ -264,28 +264,25 @@ export COMMON_FF_CFG_FLAGS=
 
 FF_CFG_FLAGS="$FF_CFG_FLAGS $COMMON_FF_CFG_FLAGS"
 
-echo "param PATH = $PATH"
-echo "param CC = $CC"
-echo "param LD = $LD"
-echo "param AR = $AR"
-echo "param STRIP = $STRIP"
+echo "PATH = $PATH"
+echo "CC = $CC"
+echo "LD = $LD"
+echo "AR = $AR"
+echo "STRIP = $STRIP"
 echo ""
-echo "param FF_CFLAGS = $FF_CFLAGS"
-echo "param FF_EXTRA_CFLAGS = $FF_EXTRA_CFLAGS"
+echo "FF_CFLAGS = $FF_CFLAGS"
+echo "FF_EXTRA_CFLAGS = $FF_EXTRA_CFLAGS"
 echo ""
-echo "param FF_DEP_LIBS = $FF_DEP_LIBS"
-echo "param FF_EXTRA_LDFLAGS = $FF_EXTRA_LDFLAGS"
+echo "FF_DEP_LIBS = $FF_DEP_LIBS"
+echo "FF_EXTRA_LDFLAGS = $FF_EXTRA_LDFLAGS"
 echo ""
-echo "param FF_CFG_FLAGS = $FF_CFG_FLAGS"
+echo "FF_CFG_FLAGS = $FF_CFG_FLAGS"
 echo "--------------------"
 echo ""
 
 echo "--------------------"
 echo "[*] configurate ffmpeg"
-echo "--------------------"
-
 cd $FF_SOURCE
-
 if [ -f "./config.h" ]; then
     echo 'reuse configure'
 else
@@ -311,6 +308,7 @@ else
 
     make clean
 fi
+echo "--------------------"
 
 # #--------------------
 # echo ""
