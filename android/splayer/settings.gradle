@@ -1,0 +1,2 @@
+include ':app'
+include ':splayer_armv7a'
