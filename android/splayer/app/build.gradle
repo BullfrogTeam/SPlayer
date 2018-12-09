@@ -47,9 +47,6 @@ android {
                 abiFilter 'x86_64'
             }
         }
-        universal {
-            dimension 'cpuArch'
-        }
     }
 }
 

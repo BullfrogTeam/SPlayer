@@ -46,8 +46,8 @@ FF_STANDALONE_TOOLCHAIN_STL=gnustl
 FF_STANDALONE_TOOLCHAIN_ARCH=arm
 FF_STANDALONE_TOOLCHAIN_CLANG=clang3.6
 
-FF_SPLAYER_SO_NAME=libsplayer.so
-FF_SPLAYER_SO_SIMPLE_NAME=splayer
+FF_SPLAYER_SO_SIMPLE_NAME=sffmpeg
+FF_SPLAYER_SO_NAME=lib${FF_SPLAYER_SO_SIMPLE_NAME}.so
 
 echo ""
 echo "--------------------"
@@ -425,12 +425,12 @@ for f in ${FF_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
     echo ${f}
     # OSX sed doesn't have in-place(-i)
     mysedi ${f} 's/\/output/\/output\/shared/g'
-    mysedi ${f} 's/-lavcodec/-lsplayer/g'
-    mysedi ${f} 's/-lavfilter/-lsplayer/g'
-    mysedi ${f} 's/-lavformat/-lsplayer/g'
-    mysedi ${f} 's/-lavutil/-lsplayer/g'
-    mysedi ${f} 's/-lswresample/-lsplayer/g'
-    mysedi ${f} 's/-lswscale/-lsplayer/g'
+    mysedi ${f} 's/-lavcodec/-lsffmpeg/g'
+    mysedi ${f} 's/-lavfilter/-lsffmpeg/g'
+    mysedi ${f} 's/-lavformat/-lsffmpeg/g'
+    mysedi ${f} 's/-lavutil/-lsffmpeg/g'
+    mysedi ${f} 's/-lswresample/-lsffmpeg/g'
+    mysedi ${f} 's/-lswscale/-lsffmpeg/g'
 done
 
 echo "--------------------"
