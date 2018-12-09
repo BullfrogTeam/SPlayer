@@ -18,18 +18,20 @@ sh tools/pull-repo-base.sh $FFMPEG_UPSTREAM $FFMPEG_LOCAL_REPO
 function pull_fork()
 {
     echo "== pull ffmpeg fork $1 =="
-    if [ ! -d android/contrib/ffmpeg-$1 ]; then
-        sh tools/pull-repo-ref.sh $FFMPEG_UPSTREAM android/contrib/ffmpeg-$1 ${FFMPEG_LOCAL_REPO}
-        cd android/contrib/ffmpeg-$1
-        git checkout -b splayer ${FFMPEG_BRANCH}
-        cd -
+    if [[ -d android/contrib/ffmpeg-$1 ]]; then
+        rm -rf android/contrib/ffmpeg-$1
     fi
+
+    sh tools/pull-repo-ref.sh $FFMPEG_UPSTREAM android/contrib/ffmpeg-$1 ${FFMPEG_LOCAL_REPO}
+    cd android/contrib/ffmpeg-$1
+    git checkout -b splayer ${FFMPEG_BRANCH}
+    cd -
 }
 
-pull_fork "armv5"
+# pull_fork "armv5"
 pull_fork "armv7a"
-pull_fork "arm64"
-pull_fork "x86"
-pull_fork "x86_64"
+# pull_fork "arm64"
+# pull_fork "x86"
+# pull_fork "x86_64"
 
 ./init-config.sh

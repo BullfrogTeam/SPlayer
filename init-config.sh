@@ -8,4 +8,4 @@ echo "== config ffmpeg module =="
 if [ -f 'config/module.sh' ]; then
     rm ./config/module.sh
 fi 
-cp config/module-min.sh config/module.sh
+cp config/module-lite.sh config/module.sh
