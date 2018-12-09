@@ -1,0 +1,89 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild {
+            cmake {
+
+                // https://developer.android.com/ndk/guides/cmake?hl=zh-cn
+
+                // Passes optional arguments to CMake.
+                arguments '-DANDROID_PLATFORM=android-21',
+                        '-DANDROID_STL=stlport_static',
+                        "-DANDROID_ARM_NEON=TRUE",
+                        "-DANDROID_TOOLCHAIN=clang",
+                        "-DANDROID_PIE=ON",
+                        "-DANDROID_CPP_FEATURES=rtti exceptions",
+                        "-DANDROID_ALLOW_UNDEFINED_SYMBOLS=FALSE",
+                        "-DANDROID_ARM_MODE=thumb",
+                        "-DANDROID_ARM_NEON=TRUE",
+                        "-DANDROID_DISABLE_FORMAT_STRING_CHECKS=FALSE"
+
+                // Sets optional flags for the C compiler.
+                // cFlags "-D_EXAMPLE_C_FLAG1", "-D_EXAMPLE_C_FLAG2"
+
+                // Sets a flag to enable format macro constants for the C++ compiler.
+                // cppFlags "-D__STDC_FORMAT_MACROS"
+                cppFlags "-frtti -fexceptions"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+        }
+    }
+
+    flavorDimensions 'cpuArch'
+    productFlavors {
+        arm7 {
+            dimension 'cpuArch'
+            ndk {
+                abiFilter 'armeabi-v7a'
+            }
+        }
+        arm8 {
+            dimension 'cpuArch'
+            ndk {
+                abiFilters 'arm64-v8a'
+            }
+        }
+        x86 {
+            dimension 'cpuArch'
+            ndk {
+                abiFilter 'x86'
+            }
+        }
+        x86_64 {
+            dimension 'cpuArch'
+            ndk {
+                abiFilter 'x86_64'
+            }
+        }
+        universal {
+            dimension 'cpuArch'
+        }
+    }
+}
+
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+}

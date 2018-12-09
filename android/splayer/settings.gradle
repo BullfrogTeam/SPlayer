@@ -1,2 +1,2 @@
 include ':app'
-include ':splayer_armv7a'
+include ':splayer-native'
