@@ -9,5 +9,7 @@
 /.idea/assetWizardSettings.xml
 .DS_Store
 /build
+/sr
 /captures
 .externalNativeBuild
+/splayer-native/src/main/libs/armeabi-v7a/libsffmpeg.so
