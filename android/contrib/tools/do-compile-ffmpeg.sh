@@ -231,7 +231,7 @@ export STRIP=${FF_CROSS_PREFIX_NAME}-strip
 # -ffast-math             Allow aggressive, lossy floating-point optimizations
 # -Werror	              把所有的告警信息转化为错误信息，并在告警发生时终止编译过程
 # -Wa,<arg>               Pass the comma separated arguments in <arg> to the assembler
-FF_CFLAGS="-O3 -fpic -Wall -pipe \
+FF_CFLAGS="-O3 -Wall -pipe \
     -std=c99 \
     -ffast-math \
     -fstrict-aliasing -Werror=strict-aliasing \
