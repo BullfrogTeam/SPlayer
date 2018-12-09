@@ -4,11 +4,21 @@ cmake_minimum_required(VERSION 3.4.1)
 
 get_filename_component(SPLAYER_ANDROID ${CMAKE_CURRENT_SOURCE_DIR}/../../../../.. ABSOLUTE)
 
-get_filename_component(SPLAYER_FF_OUTPUT ${SPLAYER_ANDROID}/contrib/build/ffmpeg-armv7a/output ABSOLUTE)
+if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
+    get_filename_component(SPLAYER_FF_OUTPUT ${SPLAYER_ANDROID}/contrib/build/ffmpeg-armv7a/output ABSOLUTE)
+else ()
+    message("Not Support ${ANDROID_ABI}")
+endif ()
 
 get_filename_component(SPLAYER_FF_OUTPUT_INCLUDE ${SPLAYER_FF_OUTPUT}/include ABSOLUTE)
 
 get_filename_component(SPLAYER_FF_OUTPUT_SO ${SPLAYER_FF_OUTPUT}/libsffmpeg.so ABSOLUTE)
+
+if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
+    file(COPY ${SPLAYER_FF_OUTPUT_SO} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../libs/armeabi-v7a/)
+else ()
+    message("Not Support ${ANDROID_ABI}")
+endif ()
 
 add_library(sffmpeg
         SHARED
@@ -28,4 +38,5 @@ add_library(splayer
 
 target_link_libraries(splayer
         sffmpeg
-        log)
+        log
+        z)

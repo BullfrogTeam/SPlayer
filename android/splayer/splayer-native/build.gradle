@@ -35,6 +35,15 @@ android {
                 cppFlags "-D__STDC_FORMAT_MACROS", "-v"
             }
         }
+
+    }
+
+    sourceSets {
+        main {
+            // let gradle pack the shared library into apk
+            jniLibs.srcDir 'src/main/libs'
+            jni.srcDirs = []
+        }
     }
 
     buildTypes {
@@ -75,6 +84,11 @@ android {
             ndk {
                 abiFilter 'x86_64'
             }
+        }
+        universal {
+            dimension 'cpuArch'
+            // include all default ABIs. with NDK-r16,  it is:
+            //   armeabi-v7a, arm64-v8a, x86, x86_64
         }
     }
 }
