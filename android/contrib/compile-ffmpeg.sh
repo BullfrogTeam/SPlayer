@@ -13,9 +13,9 @@ set +x
 FF_ACT_ARCHS_ALL="armv7a armv8a x86 x86_64"
 
 echo_archs() {
-    echo "===================="
+    echo "--------------------"
     echo "[*] check archs"
-    echo "===================="
+    echo "--------------------"
     echo "FF_ALL_ARCHS = $FF_ACT_ARCHS_ALL"
     echo "FF_ACT_ARCHS = $*"
     echo ""
@@ -34,8 +34,6 @@ echo_nextstep_help() {
     echo "--------------------"
     echo "[*] Finished"
     echo "--------------------"
-    echo "# to continue to build splayer, run script below,"
-    echo "sh compile-splayer.sh "
 }
 
 case "$FF_TARGET" in

@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
-echo "===================="
+echo "--------------------"
 echo "[*] check env ing $1"
-echo "===================="
+echo "--------------------"
 set -e
 
 FF_ARCH=$1
@@ -159,7 +159,7 @@ elif [ "$FF_ARCH" = "x86" ]; then
 
     FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=x86 --cpu=i686 --enable-yasm"
 
-    FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -march=atom -msse3 -ffast-math -mfpmath=sse"
+    FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32"
 
     FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS"
 
@@ -266,6 +266,7 @@ export STRIP=${FF_CROSS_PREFIX_NAME}-strip
 # -ffast-math             Allow aggressive, lossy floating-point optimizations
 # -Werror	              把所有的告警信息转化为错误信息，并在告警发生时终止编译过程
 # -Wa,<arg>               Pass the comma separated arguments in <arg> to the assembler
+# -fPIC https://blog.csdn.net/a_ran/article/details/41943749
 FF_CFLAGS="-O3 -Wall -pipe \
     -std=c99 \
     -ffast-math \
@@ -412,9 +413,12 @@ echo "FF_DEP_LIBS = $FF_DEP_LIBS"
 echo "FF_SPLAYER_SO = $FF_OUTPUT_PATH/$FF_SPLAYER_SO_NAME"
 echo "FF_ANDROID_PLATFORM = $FF_ANDROID_PLATFORM"
 echo "FF_TOOLCHAIN_SYSROOT = $FF_TOOLCHAIN_SYSROOT_PATH"
+echo "Use Compiler: ${CLANG}"
+echo ""
 
 ${CLANG} -lm -lz -shared -Wl,--no-undefined -Wl,-z,noexecstack ${FF_EXTRA_LDFLAGS} \
     -Wl,-soname,$FF_SPLAYER_SO_NAME \
+    -v \
     ${FF_LINK_C_OBJ_FILES} \
     ${FF_LINK_ASM_OBJ_FILES} \
     ${FF_DEP_LIBS} \
@@ -457,7 +461,7 @@ for f in ${FF_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
     fi
     cp ${f} ${FF_OUTPUT_PATH}/shared/lib/pkgconfig
     f=${FF_OUTPUT_PATH}/shared/lib/pkgconfig/`basename ${f}`
-    echo ${f}
+    echo "process share lib${f}"
     # OSX sed doesn't have in-place(-i)
     mysedi ${f} 's/\/output/\/output\/shared/g'
     mysedi ${f} 's/-lavcodec/-lsffmpeg/g'
