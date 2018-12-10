@@ -10,9 +10,7 @@ set -e
 # 执行指令后，会先显示该指令及所下的参数。
 set +x
 
-FF_ACT_ARCHS_32="armv5 armv7a x86"
-FF_ACT_ARCHS_64="armv5 armv7a arm64 x86 x86_64"
-FF_ACT_ARCHS_ALL=$FF_ACT_ARCHS_64
+FF_ACT_ARCHS_ALL="armv7a armv8a x86 x86_64"
 
 echo_archs() {
     echo "===================="
@@ -25,9 +23,8 @@ echo_archs() {
 
 echo_usage() {
     echo "Usage:"
-    echo "  compile-ffmpeg.sh armv5|armv7a|arm64|x86|x86_64"
-    echo "  compile-ffmpeg.sh all|all32"
-    echo "  compile-ffmpeg.sh all64"
+    echo "  compile-ffmpeg.sh armv7a|armv8a|x86|x86_64"
+    echo "  compile-ffmpeg.sh all"
     echo "  compile-ffmpeg.sh clean"
     echo "  compile-ffmpeg.sh check"
     exit 1
@@ -46,20 +43,12 @@ case "$FF_TARGET" in
         echo_archs armv7a
         sh tools/do-compile-ffmpeg.sh armv7a
     ;;
-    armv5|armv7a|arm64|x86|x86_64)
+    armv7a|armv8a|x86|x86_64)
         echo_archs $FF_TARGET $FF_TARGET_EXTRA
         sh tools/do-compile-ffmpeg.sh $FF_TARGET $FF_TARGET_EXTRA
         echo_nextstep_help
     ;;
-    all32)
-        echo_archs $FF_ACT_ARCHS_32
-        for ARCH in $FF_ACT_ARCHS_32
-        do
-            sh tools/do-compile-ffmpeg.sh $ARCH $FF_TARGET_EXTRA
-        done
-        echo_nextstep_help
-    ;;
-    all|all64)
+    all)
         echo_archs $FF_ACT_ARCHS_64
         for ARCH in $FF_ACT_ARCHS_64
         do

@@ -102,10 +102,6 @@ if [[ "$FF_ARCH" = "armv7a" ]]; then
 
     FF_ANDROID_PLATFORM=android-21
 
-    FF_BUILD_NAME_OPENSSL=openssl-armv7a
-
-    FF_BUILD_NAME_LIBSOXR=libsoxr-armv7a
-
     FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
 
     FF_CROSS_PREFIX_NAME=arm-linux-androideabi
@@ -125,6 +121,27 @@ if [[ "$FF_ARCH" = "armv7a" ]]; then
     FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS -march=armv7-a -Wl,--fix-cortex-a8"
 
     FF_ASSEMBLER_SUB_DIRS="arm"
+
+elif [ "$FF_ARCH" = "armv8a" ]; then
+    FF_BUILD_NAME=ffmpeg-armv8a
+
+    FF_ANDROID_PLATFORM=android-21
+
+    FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
+
+    FF_CROSS_PREFIX_NAME=aarch64-linux-android
+
+    FF_TOOLCHAIN_NAME=aarch64-linux-android-clang
+
+    FF_STANDALONE_TOOLCHAIN_NAME=aarch64-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
+
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=aarch64"
+
+    FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -march=armv8-a"
+
+    FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS"
+
+    FF_ASSEMBLER_SUB_DIRS="aarch64 neon"
 
 else
     echo "unknown architecture $FF_ARCH";
@@ -165,6 +182,7 @@ echo "FF_BUILD_NAME_OPENSSL = $FF_BUILD_NAME_OPENSSL"
 echo "FF_BUILD_NAME_LIBSOXR = $FF_BUILD_NAME_LIBSOXR"
 echo "FF_CROSS_PREFIX_NAME = $FF_CROSS_PREFIX_NAME"
 echo "FF_TOOLCHAIN_NAME = $FF_TOOLCHAIN_NAME"
+echo "FF_STANDALONE_TOOLCHAIN_NAME = $FF_STANDALONE_TOOLCHAIN_NAME"
 echo ""
 echo "FF_CFG_FLAGS = $FF_CFG_FLAGS"
 echo "FF_EXTRA_CFLAGS = $FF_EXTRA_CFLAGS"
@@ -179,7 +197,6 @@ echo "FF_DEP_OPENSSL_LIB_PATH = $FF_DEP_OPENSSL_LIB_PATH"
 echo "FF_DEP_LIBSOXR_INC_PATH = $FF_DEP_LIBSOXR_INC_PATH"
 echo "FF_DEP_LIBSOXR_LIB_PATH = $FF_DEP_LIBSOXR_LIB_PATH"
 echo "--------------------"
-
 
 echo ""
 echo "--------------------"
@@ -200,10 +217,7 @@ if [[ ! -f "$FF_TOOLCHAIN_TOUCH" ]]; then
     ${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh \
         ${FF_STANDALONE_TOOLCHAIN_FLAGS} \
         --platform=${FF_ANDROID_PLATFORM} \
-        --toolchain=${FF_STANDALONE_TOOLCHAIN_NAME} \
-        --stl=${FF_STANDALONE_TOOLCHAIN_STL} \
-        --force \
-        --arch=${FF_STANDALONE_TOOLCHAIN_ARCH}
+        --toolchain=${FF_STANDALONE_TOOLCHAIN_NAME} 
 
     touch ${FF_TOOLCHAIN_TOUCH}
 fi
