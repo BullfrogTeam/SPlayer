@@ -10,7 +10,7 @@ set -e
 # 执行指令后，会先显示该指令及所下的参数。
 set +x
 
-FF_ACT_ARCHS_ALL="armv7a armv8a x86 x86_64"
+FF_ACT_ARCHS_ALL="armv7a armv8a x86"
 
 echo_archs() {
     echo "--------------------"
@@ -47,15 +47,18 @@ case "$FF_TARGET" in
         echo_nextstep_help
     ;;
     all)
-        echo_archs $FF_ACT_ARCHS_64
-        for ARCH in $FF_ACT_ARCHS_64
+        echo "prepare all"
+        echo_archs $FF_ACT_ARCHS_ALL
+        for ARCH in $FF_ACT_ARCHS_ALL
         do
-            sh tools/do-compile-ffmpeg.sh $ARCH $FF_TARGET_EXTRA
+            echo "$ARCH $FF_TARGET_EXTRA"
+            sh ./tools/do-compile-ffmpeg.sh $ARCH $FF_TARGET_EXTRA
         done
         echo_nextstep_help
     ;;
     clean)
-        echo_archs FF_ACT_ARCHS_64
+        echo "prepare clean"
+        echo_archs FF_ACT_ARCHS_ALL
         for ARCH in $FF_ACT_ARCHS_ALL
         do
             if [ -d ffmpeg-$ARCH ]; then
