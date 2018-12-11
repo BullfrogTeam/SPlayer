@@ -23,7 +23,7 @@ echo_archs() {
 
 echo_usage() {
     echo "Usage:"
-    echo "  compile-ffmpeg.sh armv7a|armv8a|x86|x86_64"
+    echo "  compile-ffmpeg.sh armv7a|armv8a|x86"
     echo "  compile-ffmpeg.sh all"
     echo "  compile-ffmpeg.sh clean"
     echo "  compile-ffmpeg.sh check"

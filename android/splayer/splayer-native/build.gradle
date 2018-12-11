@@ -79,15 +79,6 @@ android {
                 abiFilter 'x86'
             }
         }
-        x86_64 {
-            dimension 'cpuArch'
-            ndk {
-                abiFilter 'x86_64'
-            }
-        }
-        universal {
-            dimension 'cpuArch'
-        }
     }
 }
 

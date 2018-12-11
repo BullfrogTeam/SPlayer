@@ -83,12 +83,6 @@ case "$NDK_REL" in
         exit 1
     ;;
 esac
-
-case "$UNAME_S" in
-    Darwin)
-        export FF_MAKE_FLAGS=-j`sysctl -n machdep.cpu.thread_count`
-    ;;
-esac
 echo "--------------------"
 
 
@@ -106,8 +100,6 @@ if [[ "$FF_ARCH" = "armv7a" ]]; then
 
     FF_CROSS_PREFIX_NAME=arm-linux-androideabi
 
-    FF_TOOLCHAIN_NAME=arm-linux-androideabi-clang
-
     FF_STANDALONE_TOOLCHAIN_NAME=arm-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
 
     FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=arm --cpu=cortex-a8"
@@ -118,7 +110,7 @@ if [[ "$FF_ARCH" = "armv7a" ]]; then
 
     FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -march=armv7-a -mcpu=cortex-a8 -mfpu=vfpv3-d16 -mfloat-abi=softfp -mthumb"
 
-    FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS -Wl,--fix-cortex-a8"
+    FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS -march=armv7-a -Wl,--fix-cortex-a8"
 
     FF_ASSEMBLER_SUB_DIRS="arm"
 
@@ -130,8 +122,6 @@ elif [ "$FF_ARCH" = "armv8a" ]; then
     FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
 
     FF_CROSS_PREFIX_NAME=aarch64-linux-android
-
-    FF_TOOLCHAIN_NAME=aarch64-linux-android-clang
 
     FF_STANDALONE_TOOLCHAIN_NAME=aarch64-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
 
@@ -153,8 +143,6 @@ elif [ "$FF_ARCH" = "x86" ]; then
 
     FF_CROSS_PREFIX_NAME=i686-linux-android
 
-    FF_TOOLCHAIN_NAME=i686-linux-android-clang
-
     FF_STANDALONE_TOOLCHAIN_NAME=x86-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
 
     FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=x86 --cpu=i686 --enable-yasm"
@@ -164,6 +152,26 @@ elif [ "$FF_ARCH" = "x86" ]; then
     FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS"
 
     FF_ASSEMBLER_SUB_DIRS="x86"
+
+# elif [ "$FF_ARCH" = "x86_64" ]; then
+    
+#     FF_BUILD_NAME=ffmpeg-x86_64
+
+#     FF_ANDROID_PLATFORM=android-21
+
+#     FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
+
+#     FF_CROSS_PREFIX_NAME=x86_64-linux-android
+
+#     FF_STANDALONE_TOOLCHAIN_NAME=x86_64-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
+
+#     FF_CFG_FLAGS="$FF_CFG_FLAGS  --arch=x86_64"
+
+#     FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -target x86_64-none-linux-androideabi -msse4.2 -mpopcnt -m64 -mtune=intel"
+
+#     FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS"
+
+#     FF_ASSEMBLER_SUB_DIRS="x86"
 
 else
     echo "unknown architecture $FF_ARCH";
@@ -202,7 +210,6 @@ echo "FF_BUILD_NAME = $FF_BUILD_NAME"
 echo "FF_BUILD_NAME_OPENSSL = $FF_BUILD_NAME_OPENSSL"
 echo "FF_BUILD_NAME_LIBSOXR = $FF_BUILD_NAME_LIBSOXR"
 echo "FF_CROSS_PREFIX_NAME = $FF_CROSS_PREFIX_NAME"
-echo "FF_TOOLCHAIN_NAME = $FF_TOOLCHAIN_NAME"
 echo "FF_STANDALONE_TOOLCHAIN_NAME = $FF_STANDALONE_TOOLCHAIN_NAME"
 echo ""
 echo "FF_CFG_FLAGS = $FF_CFG_FLAGS"
@@ -249,7 +256,8 @@ echo "--------------------"
 echo "[*] check ffmpeg env"
 
 export PATH=${FF_TOOLCHAIN_PATH}/bin:$PATH
-export CLANG=${FF_TOOLCHAIN_NAME}
+export CLANG=${FF_CROSS_PREFIX_NAME}-clang
+export CXX=${FF_CROSS_PREFIX_NAME}-clang++
 export LD=${FF_CROSS_PREFIX_NAME}-ld
 export AR=${FF_CROSS_PREFIX_NAME}-ar
 export STRIP=${FF_CROSS_PREFIX_NAME}-strip
@@ -267,7 +275,7 @@ export STRIP=${FF_CROSS_PREFIX_NAME}-strip
 # -Werror	              把所有的告警信息转化为错误信息，并在告警发生时终止编译过程
 # -Wa,<arg>               Pass the comma separated arguments in <arg> to the assembler
 # -fPIC https://blog.csdn.net/a_ran/article/details/41943749
-FF_CFLAGS="-O3 -Wall -pipe \
+FF_CFLAGS="-O3 -fPIC -Wall -pipe \
     -std=c99 \
     -ffast-math \
     -fstrict-aliasing -Werror=strict-aliasing \
@@ -348,14 +356,13 @@ echo "[*] configurate ffmpeg"
 
 cd ${FF_FFMPEG_SOURCE_PATH}
 
-if [[ -f "./config.h" ]]; then
+# http://www.runoob.com/linux/linux-comm-which.html
+# which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
+# which $CC
+# which ${CLANG}
+if [ -f "./config.h" ]; then
     echo 'reuse configure'
 else
-    # http://www.runoob.com/linux/linux-comm-which.html
-    # which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
-    # which $CC
-    # which ${CLANG}
-    
     ./configure ${FF_CFG_FLAGS} \
         --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
         --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 

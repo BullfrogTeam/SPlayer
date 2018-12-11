@@ -31,6 +31,5 @@ function pull_fork()
 pull_fork "armv7a"
 pull_fork "armv8a"
 pull_fork "x86"
-pull_fork "x86_64"
 
 ./init-config.sh
