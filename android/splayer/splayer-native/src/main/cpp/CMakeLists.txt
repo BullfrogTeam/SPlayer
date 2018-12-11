@@ -16,7 +16,7 @@ else ()
     message("Not Support ${ANDROID_ABI}")
 endif ()
 
-get_filename_component(SPLAYER_FF_OUTPUT_INCLUDE ${SPLAYER_FF_OUTPUT}/include ABSOLUTE)
+get_filename_component(SPLAYER_FF_OUTPUT_INCLUDE ${SPLAYER_FF_OUTPUT}/include/ ABSOLUTE)
 
 get_filename_component(SPLAYER_FF_OUTPUT_SO ${SPLAYER_FF_OUTPUT}/libsffmpeg.so ABSOLUTE)
 
