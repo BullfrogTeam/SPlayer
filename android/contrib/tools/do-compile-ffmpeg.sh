@@ -1,9 +1,22 @@
 #! /usr/bin/env bash
 
+#normal=$(tput sgr0)                      # normal text
+# Black        0;30     Dark Gray     1;30
+# Red          0;31     Light Red     1;31
+# Green        0;32     Light Green   1;32
+# Brown/Orange 0;33     Yellow        1;33
+# Blue         0;34     Light Blue    1;34
+# Purple       0;35     Light Purple  1;35
+# Cyan         0;36     Light Cyan    1;36
+# Light Gray   0;37     White         1;37
+
+RED='\033[0;31m'
+Green='\033[0;33m'
+NC='\033[0m' # No Color
+
 echo "--------------------"
-echo "[*] check env ing $1"
+echo "${RED}[*] check env ing $1 ${NC}"
 echo "--------------------"
-set -e
 
 FF_ARCH=$1
 FF_BUILD_OPT=$2
@@ -51,7 +64,8 @@ FF_SPLAYER_SO_NAME=lib${FF_SPLAYER_SO_SIMPLE_NAME}.so
 
 echo ""
 echo "--------------------"
-echo "[*] make NDK env"
+echo "${RED}[*] make NDK env${NC}"
+echo "--------------------"
 
 UNAME_S=$(uname -s)
 UNAME_SM=$(uname -sm)
@@ -83,12 +97,11 @@ case "$NDK_REL" in
         exit 1
     ;;
 esac
-echo "--------------------"
-
 
 echo ""
 echo "--------------------"
-echo "[*] make params"
+echo "${RED}[*] make params${NC}"
+echo "--------------------"
 
 if [[ "$FF_ARCH" = "armv7a" ]]; then
 
@@ -153,25 +166,25 @@ elif [ "$FF_ARCH" = "x86" ]; then
 
     FF_ASSEMBLER_SUB_DIRS="x86"
 
-# elif [ "$FF_ARCH" = "x86_64" ]; then
+elif [ "$FF_ARCH" = "x86_64" ]; then
     
-#     FF_BUILD_NAME=ffmpeg-x86_64
+    FF_BUILD_NAME=ffmpeg-x86_64
 
-#     FF_ANDROID_PLATFORM=android-21
+    FF_ANDROID_PLATFORM=android-21
 
-#     FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
+    FF_FFMPEG_SOURCE_PATH=${FF_BUILD_ROOT}/${FF_BUILD_NAME}
 
-#     FF_CROSS_PREFIX_NAME=x86_64-linux-android
+    FF_CROSS_PREFIX_NAME=x86_64-linux-android
 
-#     FF_STANDALONE_TOOLCHAIN_NAME=x86_64-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
+    FF_STANDALONE_TOOLCHAIN_NAME=x86_64-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
 
-#     FF_CFG_FLAGS="$FF_CFG_FLAGS  --arch=x86_64"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS  --arch=x86_64"
 
-#     FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -target x86_64-none-linux-androideabi -msse4.2 -mpopcnt -m64 -mtune=intel"
+    FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -target x86_64-none-linux-androideabi -msse4.2 -mpopcnt -m64 -mtune=intel"
 
-#     FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS"
+    FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS"
 
-#     FF_ASSEMBLER_SUB_DIRS="x86"
+    FF_ASSEMBLER_SUB_DIRS="x86"
 
 else
     echo "unknown architecture $FF_ARCH";
@@ -224,11 +237,12 @@ echo "FF_DEP_OPENSSL_INC_PATH = $FF_DEP_OPENSSL_INC_PATH"
 echo "FF_DEP_OPENSSL_LIB_PATH = $FF_DEP_OPENSSL_LIB_PATH"
 echo "FF_DEP_LIBSOXR_INC_PATH = $FF_DEP_LIBSOXR_INC_PATH"
 echo "FF_DEP_LIBSOXR_LIB_PATH = $FF_DEP_LIBSOXR_LIB_PATH"
-echo "--------------------"
+
 
 echo ""
 echo "--------------------"
-echo "[*] make NDK standalone toolchain"
+echo "${RED}[*] make NDK standalone toolchain${NC}"
+echo "--------------------"
 
 FF_STANDALONE_TOOLCHAIN_FLAGS="$FF_STANDALONE_TOOLCHAIN_FLAGS --install-dir=$FF_TOOLCHAIN_PATH"
 
@@ -249,11 +263,12 @@ if [[ ! -f "$FF_TOOLCHAIN_TOUCH" ]]; then
 
     touch ${FF_TOOLCHAIN_TOUCH}
 fi
-echo "--------------------"
+
 
 echo ""
 echo "--------------------"
-echo "[*] check ffmpeg env"
+echo "${RED}[*] check ffmpeg env${NC}"
+echo "--------------------"
 
 export PATH=${FF_TOOLCHAIN_PATH}/bin:$PATH
 export CLANG=${FF_CROSS_PREFIX_NAME}-clang
@@ -348,11 +363,11 @@ echo "FF_DEP_LIBS = $FF_DEP_LIBS"
 echo "FF_EXTRA_LDFLAGS = $FF_EXTRA_LDFLAGS"
 echo ""
 echo "FF_CFG_FLAGS = $FF_CFG_FLAGS"
-echo "--------------------"
 echo ""
 
 echo "--------------------"
-echo "[*] configurate ffmpeg"
+echo "${RED}[*] configurate ffmpeg${NC}"
+echo "--------------------"
 
 cd ${FF_FFMPEG_SOURCE_PATH}
 
@@ -369,12 +384,11 @@ else
 
     make clean
 fi
-echo "--------------------"
 
-#--------------------
 echo ""
 echo "--------------------"
-echo "[*] compile ffmpeg"
+echo "${RED}[*] compile ffmpeg${NC}"
+echo "--------------------"
 echo "FF_OUTPUT_PATH = $FF_OUTPUT_PATH"
 echo "FF_MAKE_FLAGS = $FF_MAKE_FLAGS"
 
@@ -387,11 +401,12 @@ mkdir -p FF_OUTPUT_PATH/include/libffmpeg
 cp -f config.h FF_OUTPUT_PATH/include/libffmpeg/config.h
 echo "FF_LIB_CONFIG = $FF_OUTPUT_PATH/include/libffmpeg/config.h"
 echo "FFmpeg install success"
-echo "--------------------"
+
 
 echo ""
 echo "--------------------"
-echo "[*] link ffmpeg"
+echo "${RED}[*] link ffmpeg${NC}"
+echo "--------------------"
 
 FF_LINK_C_OBJ_FILES=
 FF_LINK_ASM_OBJ_FILES=
@@ -430,8 +445,6 @@ ${CLANG} -lm -lz -shared -Wl,--no-undefined -Wl,-z,noexecstack ${FF_EXTRA_LDFLAG
     ${FF_LINK_ASM_OBJ_FILES} \
     ${FF_DEP_LIBS} \
     -o ${FF_OUTPUT_PATH}/$FF_SPLAYER_SO_NAME
-
-echo "--------------------"
 
 mysedi() {
     f=$1
