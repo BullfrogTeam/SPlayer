@@ -1,20 +1,24 @@
 #! /usr/bin/env bash
 
+RED='\033[0;31m'
+Green='\033[0;33m'
+NC='\033[0m' # No Color
+
 UNI_BUILD_ROOT=`pwd`
 
 FF_TARGET=$1
 FF_TARGET_EXTRA=$2
 
 # -e 若指令传回值不等于0，则立即退出shell。
-set -e
+#set -e
 # 执行指令后，会先显示该指令及所下的参数。
-set +x
+# set +x
 
 FF_ACT_ARCHS_ALL="armv7a armv8a x86"
 
 echo_archs() {
     echo "--------------------"
-    echo "[*] check archs"
+    echo -e "${RED}[*] check archs${NC}"
     echo "--------------------"
     echo "FF_ALL_ARCHS = $FF_ACT_ARCHS_ALL"
     echo "FF_ACT_ARCHS = $*"
@@ -32,7 +36,7 @@ echo_usage() {
 
 echo_nextstep_help() {
     echo "--------------------"
-    echo "[*] Finished"
+    echo -e "${RED}[*] Finished${NC}"
     echo "--------------------"
 }
 

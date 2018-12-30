@@ -460,7 +460,8 @@ mysedi() {
 
 echo ""
 echo "--------------------"
-echo "[*] create files for shared ffmpeg"
+echo "${RED}[*] create files for shared ffmpeg${NC}"
+echo "--------------------"
 echo ""
 
 rm -rf ${FF_OUTPUT_PATH}/shared
@@ -492,5 +493,4 @@ for f in ${FF_OUTPUT_PATH}/lib/pkgconfig/*.pc; do
     mysedi ${f} 's/-lswscale/-lsffmpeg/g'
 done
 
-echo "--------------------"
 echo ""
