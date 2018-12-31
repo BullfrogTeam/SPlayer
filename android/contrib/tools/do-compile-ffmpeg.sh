@@ -30,8 +30,6 @@ if [[ -z "$FF_ARCH" ]]; then
     exit 1
 fi
 
-FF_MAKE_FLAGS=
-
 FF_BUILD_ROOT=`pwd`
 FF_ANDROID_PLATFORM=android-21
 
@@ -70,8 +68,8 @@ echo "--------------------"
 UNAME_S=$(uname -s)
 UNAME_SM=$(uname -sm)
 
-echo "build on $UNAME_SM"
-echo "ANDROID_NDK=$ANDROID_NDK"
+echo "BUILD PLATFORM = $UNAME_SM"
+echo "ANDROID_NDK = $ANDROID_NDK"
 
 if [[ -z "$ANDROID_NDK" ]]; then
     echo "You must define ANDROID_NDK before starting."
@@ -86,7 +84,7 @@ case "$NDK_REL" in
     11*|12*|13*|14*|16*)
         if test -d ${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.9
         then
-            echo "NDKr$NDK_REL detected"
+            echo "NDK VERSION = r$NDK_REL"
         else
             echo "You need the NDKr10e or later"
             exit 1
@@ -178,7 +176,7 @@ elif [ "$FF_ARCH" = "x86_64" ]; then
 
     FF_STANDALONE_TOOLCHAIN_NAME=x86_64-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
 
-    FF_CFG_FLAGS="$FF_CFG_FLAGS  --arch=x86_64"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS  --arch=x86_64 --enable-yasm"
 
     FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -target x86_64-none-linux-androideabi -msse4.2 -mpopcnt -m64 -mtune=intel"
 
@@ -218,7 +216,6 @@ mkdir -p ${FF_OUTPUT_PATH}
 
 echo "FF_FFMPEG_SOURCE_PATH = $FF_FFMPEG_SOURCE_PATH"
 echo ""
-echo "FF_MAKE_FLAGS = $FF_MAKE_FLAGS"
 echo "FF_BUILD_NAME = $FF_BUILD_NAME"
 echo "FF_BUILD_NAME_OPENSSL = $FF_BUILD_NAME_OPENSSL"
 echo "FF_BUILD_NAME_LIBSOXR = $FF_BUILD_NAME_LIBSOXR"
@@ -290,6 +287,7 @@ export STRIP=${FF_CROSS_PREFIX_NAME}-strip
 # -Werror	              把所有的告警信息转化为错误信息，并在告警发生时终止编译过程
 # -Wa,<arg>               Pass the comma separated arguments in <arg> to the assembler
 # -fPIC https://blog.csdn.net/a_ran/article/details/41943749
+# -std=c99 https://blog.csdn.net/u012075739/article/details/26516007/
 FF_CFLAGS="-O3 -fPIC -Wall -pipe \
     -std=c99 \
     -ffast-math \
@@ -298,21 +296,21 @@ FF_CFLAGS="-O3 -fPIC -Wall -pipe \
     -DANDROID -DNDEBUG"
 
 # with ffmpeg openssl
-if [[ -f "${FF_DEP_OPENSSL_LIB_PATH}/libssl.a" ]]; then
-    echo "OpenSSL detected"
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-nonfree"
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-openssl"
+# if [[ -f "${FF_DEP_OPENSSL_LIB_PATH}/libssl.a" ]]; then
+#     echo "OpenSSL detected"
+#     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-nonfree"
+#     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-openssl"
 
-    FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_OPENSSL_INC_PATH}"
-    FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_OPENSSL_LIB_PATH} -lssl -lcrypto"
-fi
-if [[ -f "${FF_DEP_LIBSOXR_LIB_PATH}/libsoxr.a" ]]; then
-    echo "libsoxr detected"
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-libsoxr"
+#     FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_OPENSSL_INC_PATH}"
+#     FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_OPENSSL_LIB_PATH} -lssl -lcrypto"
+# fi
+# if [[ -f "${FF_DEP_LIBSOXR_LIB_PATH}/libsoxr.a" ]]; then
+#     echo "libsoxr detected"
+#     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-libsoxr"
 
-    FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_LIBSOXR_INC_PATH}"
-    FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_LIBSOXR_LIB_PATH} -lsoxr"
-fi
+#     FF_CFLAGS="$FF_CFLAGS -I${FF_DEP_LIBSOXR_INC_PATH}"
+#     FF_DEP_LIBS="$FF_DEP_LIBS -L${FF_DEP_LIBSOXR_LIB_PATH} -lsoxr"
+# fi
 
 # with ffmpeg standard options:
 FF_CFG_FLAGS="$FF_CFG_FLAGS --prefix=$FF_OUTPUT_PATH"
@@ -331,6 +329,7 @@ else
     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-asm"
     FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-inline-asm"
 fi
+
 case "$FF_BUILD_OPT" in
     debug)
         FF_CFG_FLAGS="$FF_CFG_FLAGS --disable-optimizations"
@@ -376,11 +375,14 @@ cd ${FF_FFMPEG_SOURCE_PATH}
 # which $CC
 # which ${CLANG}
 if [ -f "./config.h" ]; then
-    echo 'reuse configure'
+    echo 'Reuse configure'
 else
     ./configure ${FF_CFG_FLAGS} \
         --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
         --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 
+    
+    # --extra-cflags=ECFLAGS   add ECFLAGS to CFLAGS []
+    # --extra-ldflags=ELDFLAGS add ELDFLAGS to LDFLAGS []
 
     make clean
 fi
@@ -390,15 +392,14 @@ echo "--------------------"
 echo "${RED}[*] compile ffmpeg${NC}"
 echo "--------------------"
 echo "FF_OUTPUT_PATH = $FF_OUTPUT_PATH"
-echo "FF_MAKE_FLAGS = $FF_MAKE_FLAGS"
 
 cp config.* ${FF_OUTPUT_PATH}
 
-make ${FF_MAKE_FLAGS} > /dev/null
 make install > /dev/null
 
 mkdir -p FF_OUTPUT_PATH/include/libffmpeg
 cp -f config.h FF_OUTPUT_PATH/include/libffmpeg/config.h
+
 echo "FF_LIB_CONFIG = $FF_OUTPUT_PATH/include/libffmpeg/config.h"
 echo "FFmpeg install success"
 
