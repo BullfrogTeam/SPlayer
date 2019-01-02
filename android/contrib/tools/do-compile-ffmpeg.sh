@@ -136,7 +136,7 @@ elif [ "$FF_ARCH" = "armv8a" ]; then
 
     FF_STANDALONE_TOOLCHAIN_NAME=aarch64-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
 
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=aarch64 --enable-yasm"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=aarch64"
 
     FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -march=armv8-a"
 
@@ -156,7 +156,7 @@ elif [ "$FF_ARCH" = "x86" ]; then
 
     FF_STANDALONE_TOOLCHAIN_NAME=x86-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
 
-    FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=x86 --cpu=i686 --enable-yasm"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS --arch=x86 --cpu=i686"
 
     FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -march=i686 -mtune=intel -mssse3 -mfpmath=sse -m32"
 
@@ -176,11 +176,14 @@ elif [ "$FF_ARCH" = "x86_64" ]; then
 
     FF_STANDALONE_TOOLCHAIN_NAME=x86_64-linux-android-${FF_STANDALONE_TOOLCHAIN_CLANG}
 
-    FF_CFG_FLAGS="$FF_CFG_FLAGS  --arch=x86_64 --enable-yasm"
+    FF_CFG_FLAGS="$FF_CFG_FLAGS  --arch=x86_64"
 
     FF_EXTRA_CFLAGS="$FF_EXTRA_CFLAGS -target x86_64-none-linux-androideabi -msse4.2 -mpopcnt -m64 -mtune=intel"
 
-    FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS"
+    # https://blog.csdn.net/cjf_iceking/article/details/25825569
+    # 其中Wl表示将紧跟其后的参数，传递给连接器ld。Bsymbolic表示强制采用本地的全局变量定义，
+    # 这样就不会出现动态链接库的全局变量定义被应用程序/动态链接库中的同名定义给覆盖了！
+    FF_EXTRA_LDFLAGS="$FF_EXTRA_LDFLAGS -Wl,-Bsymbolic"
 
     FF_ASSEMBLER_SUB_DIRS="x86"
 
@@ -381,9 +384,6 @@ else
         --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
         --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS" 
     
-    # --extra-cflags=ECFLAGS   add ECFLAGS to CFLAGS []
-    # --extra-ldflags=ELDFLAGS add ELDFLAGS to LDFLAGS []
-
     make clean
 fi
 
@@ -441,11 +441,9 @@ echo ""
 
 ${CLANG} -lm -lz -shared -Wl,--no-undefined -Wl,-z,noexecstack ${FF_EXTRA_LDFLAGS} \
     -Wl,-soname,$FF_SPLAYER_SO_NAME \
-    -v \
     ${FF_LINK_C_OBJ_FILES} \
     ${FF_LINK_ASM_OBJ_FILES} \
-    ${FF_DEP_LIBS} \
-    -o ${FF_OUTPUT_PATH}/$FF_SPLAYER_SO_NAME
+    -o ${FF_OUTPUT_PATH}/$FF_SPLAYER_SO_NAME 
 
 mysedi() {
     f=$1
