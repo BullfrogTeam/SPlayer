@@ -82,7 +82,43 @@ android {
     }
 }
 
+copyFFmpegSo()
+
+clean.doFirst {
+    delete "${rootDir}/splayer-native/src/main/libs/arm64-v8a/libsffmpeg.so"
+    delete "${rootDir}/splayer-native/src/main/libs/armeabi-v7a/libsffmpeg.so"
+    delete "${rootDir}/splayer-native/src/main/libs/x86/libsffmpeg.so"
+    println "Remove libsffmpeg.so"
+}
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 }
+
+def copyFFmpegSo() {
+    Gradle gradle = getGradle()
+    for (TaskExecutionRequest task : gradle.getStartParameter().getTaskRequests()) {
+        if (task.args != null && task.args.size() != 0) {
+            if (task.args.get(0) == "assembleX86") {
+                copy {
+                    from "../splayer-ffmpeg-output/ffmpeg-x86/lib"
+                    into "./src/main/libs/x86/"
+                    include "*.so"
+                }
+            } else if (task.args.get(0) == "assembleArm8") {
+                copy {
+                    from "../splayer-ffmpeg-output/ffmpeg-x86/lib"
+                    into "./src/main/libs/arm64-v8a/"
+                    include "*.so"
+                }
+            } else if (task.args.get(0) == "assembleArm7") {
+                copy {
+                    from "../splayer-ffmpeg-output/ffmpeg-armv7a/lib"
+                    into "./src/main/libs/armeabi-v7a/"
+                    include "*.so"
+                }
+            }
+        }
+    }
+}
+

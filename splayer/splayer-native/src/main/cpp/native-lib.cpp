@@ -5,14 +5,14 @@
 // 85d10159-0c61-4ffb-839b-dcd3ddf21069
 
 extern "C" {
-//#include "libavutil/error.h"
-//#include "libavutil/log.h"
+#include "libavutil/error.h"
+#include "libavutil/log.h"
 }
 
 extern "C" JNIEXPORT jstring JNICALL Java_com_bullfrog_splayer_MainActivity_stringFromJNI(JNIEnv *env, jobject) {
-    char errbuf[128];
-    const char *errbuf_ptr = errbuf;
-//    av_log(NULL, AV_LOG_ERROR, "%s: %s\n", "biezihua", errbuf_ptr);
+//    char errbuf[128];
+//    const char *errbuf_ptr = errbuf;
+    av_log(NULL, AV_LOG_ERROR, "%s: %s\n", "biezihua", "huyuqiong");
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
 }
