@@ -3,6 +3,16 @@
 //
 
 #include <jni.h>
+#include <android/log.h>
+
+static const char *kTAG = "splayer_jni";
+
+#define LOGI(...) \
+  ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
+#define LOGW(...) \
+  ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
+#define LOGE(...) \
+  ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 //    JNIEnv* env = NULL;
@@ -23,6 +33,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 //    ijkmp_global_set_inject_callback(inject_callback);
 //
 //    FFmpegApi_global_init(env);
+    LOGE("JNI_OnLoad");
 
     return JNI_VERSION_1_4;
 }
@@ -31,4 +42,6 @@ extern "C" JNIEXPORT void JNI_OnUnload(JavaVM *jvm, void *reserved) {
 //    ijkmp_global_uninit();
 
 //    pthread_mutex_destroy(&g_clazz.mutex);
+
+    LOGE("JNI_OnUnload");
 }
