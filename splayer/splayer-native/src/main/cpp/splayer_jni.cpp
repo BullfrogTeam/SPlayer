@@ -6,7 +6,7 @@
 #include <android/log.h>
 #include <assert.h>
 #include <pthread.h>
-#include "global_player_field.h"
+#include "GlobalPlayerField.h"
 
 static const char *kTAG = "splayer_jni";
 
@@ -14,7 +14,7 @@ static const char *kTAG = "splayer_jni";
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
 #define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
 
-static global_player_field *global_player_field = new global_player_field();
+static GlobalPlayerField *global_player_field = new GlobalPlayerField();
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     JNIEnv *env = NULL;

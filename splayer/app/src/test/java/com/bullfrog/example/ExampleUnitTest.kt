@@ -1,4 +1,4 @@
-package com.bullfrog.splayer
+package com.bullfrog.example
 
 import org.junit.Test
 

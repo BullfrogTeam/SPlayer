@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <jni.h>
 
-class global_player_field {
+class GlobalPlayerField {
 public:
     pthread_mutex_t mutex;
     jclass clazz;

@@ -1,4 +1,4 @@
-package com.bullfrog.splayer
+package com.bullfrog.example
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
