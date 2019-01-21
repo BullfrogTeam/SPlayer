@@ -23,7 +23,7 @@ static const char *kTAG = "splayer_jni";
 
 static s_global_player_field *global_player_field = new s_global_player_field();
 
-extern "C" JNIEXPORT jstring JNICALL Java_com_bullfrog_splayer_SPlayer_stringFromJNI(JNIEnv *env, jobject) {
+extern "C" JNIEXPORT jstring JNICALL Java_com_bzh_splayer_SPlayer_stringFromJNI(JNIEnv *env, jobject) {
     av_log(NULL, AV_LOG_ERROR, "%s: %s\n", "biezihua", "huyuqiong");
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
@@ -50,11 +50,11 @@ extern "C" JNIEXPORT void JNI_OnUnload(JavaVM *jvm, void *reserved) {
     LOGE("JNI_OnUnload");
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_bullfrog_splayer_SPlayer_nativeInit(JNIEnv *env, jobject instance) {
+extern "C" JNIEXPORT void JNICALL Java_com_bzh_splayer_SPlayer_nativeInit(JNIEnv *env, jobject instance) {
 
 
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_bullfrog_splayer_SPlayer_nativeSetup(JNIEnv *env, jobject instance) {
+extern "C" JNIEXPORT void JNICALL Java_com_bzh_splayer_SPlayer_nativeSetup(JNIEnv *env, jobject instance) {
 
 }

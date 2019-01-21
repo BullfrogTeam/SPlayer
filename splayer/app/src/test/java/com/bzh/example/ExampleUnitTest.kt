@@ -1,4 +1,4 @@
-package com.bullfrog.example
+package com.bzh.example
 
 import org.junit.Test
 

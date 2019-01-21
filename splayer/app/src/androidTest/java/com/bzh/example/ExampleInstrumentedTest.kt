@@ -1,4 +1,4 @@
-package com.bullfrog.example
+package com.bzh.example
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
