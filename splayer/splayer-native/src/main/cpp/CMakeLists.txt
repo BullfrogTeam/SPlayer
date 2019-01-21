@@ -33,7 +33,7 @@ include_directories(${SPLAYER_FF_OUTPUT_INCLUDE})
 add_library(splayer
         SHARED
         splayer_jni.cpp
-        native-lib.cpp)
+        )
 
 target_link_libraries(splayer
         sffmpeg
