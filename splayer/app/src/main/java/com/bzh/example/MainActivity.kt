@@ -19,6 +19,9 @@ class MainActivity : AppCompatActivity() {
         sample_text.setOnClickListener {
             sample_text.text = splayer.stringFromJNI()
         }
+
+        splayer.nativeInit()
+        splayer.nativeSetup()
     }
 
 }

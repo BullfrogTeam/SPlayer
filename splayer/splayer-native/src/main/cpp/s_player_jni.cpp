@@ -14,14 +14,13 @@ extern "C" {
 static s_global_player_field *global_player_field = new s_global_player_field();
 
 extern "C" JNIEXPORT jstring JNICALL Java_com_bzh_splayer_SPlayer_stringFromJNI(JNIEnv *env, jobject) {
-    ALOGD("%s: %s\n", "biezihua", "huyuqiong");
-
+    ALOGD("%s\n", __func__);
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
 }
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
-    ALOGD("JNI_OnLoad");
+    ALOGD("%s\n", __func__);
 
     JNIEnv *env = NULL;
 
@@ -37,14 +36,14 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 extern "C" JNIEXPORT void JNI_OnUnload(JavaVM *jvm, void *reserved) {
-    ALOGD("JNI_OnUnload");
+    ALOGD("%s\n", __func__);
     pthread_mutex_destroy(&global_player_field->mutex);
 }
 
 extern "C" JNIEXPORT void JNICALL Java_com_bzh_splayer_SPlayer_nativeInit(JNIEnv *env, jobject instance) {
-    ALOGD("nativeInit");
+    ALOGD("%s\n", __func__);
 }
 
 extern "C" JNIEXPORT void JNICALL Java_com_bzh_splayer_SPlayer_nativeSetup(JNIEnv *env, jobject instance) {
-    ALOGD("nativeSetup");
+    ALOGD("%s\n", __func__);
 }
