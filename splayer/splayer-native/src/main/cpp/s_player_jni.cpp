@@ -1,35 +1,28 @@
-//
-// Splayer entrance file
-//
 
 #include <jni.h>
-#include <android/log.h>
 #include <assert.h>
 #include <pthread.h>
 #include <string>
 #include "s_global_player_field.h"
+#include "s_log.h"
 
 extern "C" {
 #include "libavutil/error.h"
 #include "libavutil/log.h"
 }
 
-
-static const char *kTAG = "splayer_jni";
-
-#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
-#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
-#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
-
 static s_global_player_field *global_player_field = new s_global_player_field();
 
 extern "C" JNIEXPORT jstring JNICALL Java_com_bzh_splayer_SPlayer_stringFromJNI(JNIEnv *env, jobject) {
-    av_log(NULL, AV_LOG_ERROR, "%s: %s\n", "biezihua", "huyuqiong");
+    ALOGD("%s: %s\n", "biezihua", "huyuqiong");
+
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
 }
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    ALOGD("JNI_OnLoad");
+
     JNIEnv *env = NULL;
 
     global_player_field->jvm = vm;
@@ -44,17 +37,14 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 extern "C" JNIEXPORT void JNI_OnUnload(JavaVM *jvm, void *reserved) {
-
+    ALOGD("JNI_OnUnload");
     pthread_mutex_destroy(&global_player_field->mutex);
-
-    LOGE("JNI_OnUnload");
 }
 
 extern "C" JNIEXPORT void JNICALL Java_com_bzh_splayer_SPlayer_nativeInit(JNIEnv *env, jobject instance) {
-
-
+    ALOGD("nativeInit");
 }
 
 extern "C" JNIEXPORT void JNICALL Java_com_bzh_splayer_SPlayer_nativeSetup(JNIEnv *env, jobject instance) {
-
+    ALOGD("nativeSetup");
 }
