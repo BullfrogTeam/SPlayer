@@ -5,11 +5,7 @@
 #include <string>
 #include "s_global_player.h"
 #include "s_log.h"
-
-extern "C" {
-#include "libavutil/error.h"
-#include "libavutil/log.h"
-}
+#include "s_global_exception.h"
 
 static s_global_player *g_player;
 
@@ -60,6 +56,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_bzh_splayer_SPlayer_nativeCreate(JNIE
 
     s_media_player *mp = g_player->create_media();
     if (!mp) {
+        throwOutOfMemoryError(env, const_cast<char *>("native_setup: create_media() failed"));
         return;
     }
 }

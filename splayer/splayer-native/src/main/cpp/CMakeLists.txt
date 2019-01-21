@@ -33,7 +33,11 @@ include_directories(${SPLAYER_FF_OUTPUT_INCLUDE})
 add_library(splayer
         SHARED
         s_log.h
-        a_global_player_jni.cpp
+
+        s_global_exception.h
+        s_global_exception.cpp
+
+        s_global_player_jni.cpp
 
         s_global_player.h
         s_global_player.cpp
