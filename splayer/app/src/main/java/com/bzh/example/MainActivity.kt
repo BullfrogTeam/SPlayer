@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.bzh.splayer.SPlayer
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.ref.WeakReference
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,8 +21,12 @@ class MainActivity : AppCompatActivity() {
             sample_text.text = splayer.stringFromJNI()
         }
 
-        splayer.nativeInit()
-        splayer.nativeSetup()
+        splayer.nativeCreate()
+        splayer.nativeSetup(WeakReference<SPlayer>(splayer))
     }
 
+    override fun onDestroy() {
+        splayer.nativeDestroy()
+        super.onDestroy()
+    }
 }

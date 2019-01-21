@@ -32,7 +32,15 @@ include_directories(${SPLAYER_FF_OUTPUT_INCLUDE})
 
 add_library(splayer
         SHARED
-        s_player_jni.cpp
+        s_log.h
+        a_global_player_jni.cpp
+
+        s_global_player.h
+        s_global_player.cpp
+
+        s_media_player.h
+        s_media_player.cpp
+
         )
 
 target_link_libraries(splayer
